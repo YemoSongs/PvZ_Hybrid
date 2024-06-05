@@ -57,8 +57,12 @@ public class MenuPanel : BasePanel
         //});
 
 
-        ABMgr.Instance.LoadSceneFromAssetBundle("scene", "GameScene");
-
+        //ABMgr.Instance.LoadSceneFromAssetBundle("scene", "GameScene");
+        SceneMgr.Instance.LoadSceneAsyn("scene", "GameScene", () =>
+        {
+            UIMgr.Instance.HidePanel<MenuPanel>();
+            UIMgr.Instance.ShowPanel<LevelPanel>();
+        });
     }
     void Btn_MiniMode_OnClick()
     {

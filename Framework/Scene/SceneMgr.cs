@@ -43,4 +43,33 @@ public class SceneMgr : BaseManager<SceneMgr>
         callBack?.Invoke();
         callBack = null;
     }
+
+    /// <summary>
+    /// 异步加载场景资源ab包
+    /// </summary>
+    /// <param name="abname">ab包的名字</param>
+    /// <param name="sceneName">场景的名字</param>
+    /// <param name="callBack">回调函数</param>
+    public void LoadSceneAsyn(string abname, string sceneName,UnityAction callBack = null)
+    {
+#if UNITY_EDITOR
+        if (ABResMgr.Instance.isDebug)
+        {
+            LoadSceneAsyn(sceneName, callBack);
+        }
+        else
+        {
+            ABMgr.Instance.LoadSceneFromAssetBundle(abname, sceneName, callBack);
+        }
+#else
+        ABMgr.Instance.LoadSceneFromAssetBundle(abname, sceneName, callBack);
+#endif
+    }
+
+
+
+
+
+
+
 }

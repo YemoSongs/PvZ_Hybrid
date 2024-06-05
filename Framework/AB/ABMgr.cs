@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 //知识点
 //字典
@@ -423,46 +424,91 @@ public class ABMgr : SingletonAutoMono<ABMgr>
     /// </summary>
     /// <param name="bundlePath"></param>
     /// <param name="sceneName"></param>
-    public void LoadSceneFromAssetBundle(string abName, string sceneName)
+    public void LoadSceneFromAssetBundle(string abName, string sceneName, UnityAction callBack = null)
     {
-        StartCoroutine(LoadSceneFromAssetBundleCoroutine(abName, sceneName));
+        StartCoroutine(LoadSceneFromAssetBundleCoroutine(abName, sceneName,callBack));
     }
 
-    private IEnumerator LoadSceneFromAssetBundleCoroutine(string abName, string sceneName)
+    private IEnumerator LoadSceneFromAssetBundleCoroutine(string abName, string sceneName, UnityAction callBack = null)
     {
 
-        AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(PathUrl+abName);
-        yield return bundleRequest;
-
-        AssetBundle bundle = bundleRequest.assetBundle;
-
-        if (bundle == null)
-        {
-            Debug.LogError("Failed to load AssetBundle!");
-            yield break;
-        }
-
-        if (bundle.isStreamedSceneAssetBundle)
+        if (!abDic.ContainsKey(abName))
         {
 
-            yield return LoadDependencies(abName, false);
+            abDic.Add(abName, null);
+            AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(PathUrl + abName);
+            yield return bundleRequest;
+            
+            AssetBundle bundle = bundleRequest.assetBundle;
+            abDic[abName] = bundle;
 
-            string[] scenePaths = bundle.GetAllScenePaths();
-            foreach (string scenePath in scenePaths)
+            if (bundle == null)
             {
-                Debug.Log("Scene in AssetBundle: " + scenePath);
+                Debug.LogError("Failed to load AssetBundle!");
+                yield break;
             }
 
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-            while (!asyncLoad.isDone)
+            if (bundle.isStreamedSceneAssetBundle)
             {
-                yield return null;
+
+                yield return LoadDependencies(abName, false);
+
+                string[] scenePaths = bundle.GetAllScenePaths();
+                foreach (string scenePath in scenePaths)
+                {
+                    Debug.Log("Scene in AssetBundle: " + scenePath);
+                }
+
+                AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+                while (!asyncLoad.isDone)
+                {
+                    yield return null;
+                }
+
+                callBack?.Invoke();
+            }
+            else
+            {
+                Debug.LogError("The AssetBundle does not contain streamed scenes.");
             }
         }
-        else
+        else if (abDic.ContainsKey(abName))
         {
-            Debug.LogError("The AssetBundle does not contain streamed scenes.");
+
+            if (abDic[abName].isStreamedSceneAssetBundle)
+            {
+                yield return LoadDependencies(abName, false);
+
+                string[] scenePaths = abDic[abName].GetAllScenePaths();
+                foreach (string scenePath in scenePaths)
+                {
+                    Debug.Log("Scene in AssetBundle: " + scenePath);
+                }
+
+                AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+                while (!asyncLoad.isDone)
+                {
+                    yield return null;
+                }
+
+                callBack?.Invoke();
+            }
+            else
+            {
+                Debug.LogError("The AssetBundle does not contain streamed scenes.");
+            }
         }
+        else 
+        {
+            //如果字典中记录的信息是null 那就证明正在加载中
+            //我们只需要等待它加载结束 就可以继续执行后面的代码了
+            while (abDic[abName] == null)
+            {
+                //只要发现正在加载中 就不停的等待一帧 下一帧再进行判断
+                yield return 0;
+            }
+        }
+        
     }
 
 

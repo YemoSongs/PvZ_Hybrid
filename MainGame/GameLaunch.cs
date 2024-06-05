@@ -3,17 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class GameLaunch : MonoBehaviour
+public class GameLaunch : SingletonMono<GameLaunch>
 {
+
+
+    public bool isDebug = true;
 
     public string language = "English"; // 默认语言;
 
     public float musicValue;
     public float soundValue;
 
-    
+
+
+
     void Start()
     {
+
+
+        //设置运行模式
+        ABResMgr.Instance.isDebug = isDebug;
+
+
         //设置本地化为中文
         LocalizationManager.Instance.LoadLocalizedText(language);
 

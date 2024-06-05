@@ -27,6 +27,10 @@ public class GameLaunchEditor : Editor
         // 自定义Inspector界面
         EditorGUILayout.LabelField("GameLaunch——游戏入口", EditorStyles.boldLabel);
 
+        //设置是否是调试模式
+        gameLaunch.isDebug = EditorGUILayout.Toggle("Debug", gameLaunch.isDebug);
+
+
         // 本地化选项
         int selectedLanguageIndex = System.Array.IndexOf(languageOptions, gameLaunch.language);
         if (selectedLanguageIndex == -1) selectedLanguageIndex = 0; // 如果找不到，默认选择第一个
@@ -53,6 +57,8 @@ public class GameLaunchEditor : Editor
                 MusicMgr.Instance.ChangeSoundValue(gameLaunch.soundValue);
 
                 LocalizationManager.Instance.SetLanguage(gameLaunch.language);
+
+                ABResMgr.Instance.isDebug = gameLaunch.isDebug;
             }
 
         }
