@@ -42,21 +42,23 @@ public class MenuPanel : BasePanel
     }
     void Btn_Options_OnClick()
     {
-        //UIMgr.Instance.HidePanel<MenuPanel>();
         UIMgr.Instance.ShowPanel<OptionsPanel>();
     }
     void Btn_Help_OnClick()
     {
-        //UIMgr.Instance.HidePanel<MenuPanel>();
         UIMgr.Instance.ShowPanel<HelpPanel>();
     }
     void Btn_AdventureMode_OnClick()
     {
-        //UIMgr.Instance.HidePanel<MenuPanel>();
-        UIMgr.Instance.ShowPanel<TipsPanel>(E_UILayer.Top,(panel)=>
-        {
-            panel.ShowContent("正在开发中......");
-        });
+
+        //ABResMgr.Instance.LoadResAsync<SceneAsset>("scene", "GameScene", (res) =>
+        //{
+        //    SceneMgr.Instance.LoadSceneAsyn("GameScene");
+        //});
+
+
+        ABMgr.Instance.LoadSceneFromAssetBundle("scene", "GameScene");
+
     }
     void Btn_MiniMode_OnClick()
     {
@@ -74,39 +76,22 @@ public class MenuPanel : BasePanel
             panel.ShowContent("正在开发中......");
         });
     }
-    void Btn_ChangeAccount_OnClick()
+    void Btn_ChangeArchive_OnClick()
     {
-        //UIMgr.Instance.HidePanel<MenuPanel>();
-        UIMgr.Instance.ShowPanel<TipsPanel>(E_UILayer.Top, (panel) =>
-        {
-            panel.ShowContent("正在开发中......");
-        });
+        UIMgr.Instance.ShowPanel<ArchivePanel>();
     }
     void Btn_IllustratedGuide_OnClick()
     {
-        //UIMgr.Instance.HidePanel<MenuPanel>();
-        //UIMgr.Instance.ShowPanel<TipsPanel>(E_UILayer.Top, (panel) =>
-        //{
-        //    panel.ShowContent("正在开发中......");
-        //});
-
         UIMgr.Instance.ShowPanel<IllustratedGuidePanel>();
     }
     void Btn_Achievements_OnClick()
     {
-        //UIMgr.Instance.HidePanel<MenuPanel>();
-        UIMgr.Instance.ShowPanel<TipsPanel>(E_UILayer.Top, (panel) =>
-        {
-            panel.ShowContent("正在开发中......");
-        });
+
+        UIMgr.Instance.ShowPanel<AchievementsPanel>();
     }
     void Btn_Shop_OnClick()
     {
-        //UIMgr.Instance.HidePanel<MenuPanel>();
-        //UIMgr.Instance.ShowPanel<TipsPanel>(E_UILayer.Top, (panel) =>
-        //{
-        //    panel.ShowContent("正在开发中......");
-        //});
+
         UIMgr.Instance.ShowPanel<ShopPanel>();
     }
 
@@ -135,8 +120,8 @@ public class MenuPanel : BasePanel
             case "Btn_SurvivalMode":
                 Btn_SurvivalMode_OnClick();
                 break;
-            case "Btn_ChangeAccount":
-                Btn_ChangeAccount_OnClick();
+            case "Btn_ChangeArchive":
+                Btn_ChangeArchive_OnClick();
                 break;
             case "Btn_IllustratedGuide":
                 Btn_IllustratedGuide_OnClick();

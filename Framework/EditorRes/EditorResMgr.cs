@@ -30,6 +30,10 @@ public class EditorResMgr : BaseManager<EditorResMgr>
             suffixName = ".png";
         else if (typeof(T) == typeof(AudioClip))
             suffixName = ".mp3";
+        else if (typeof(T) == typeof(TextAsset))
+            suffixName = ".json";
+        else if (typeof(T) == typeof(SceneAsset))
+            suffixName = ".unity";
         T res = AssetDatabase.LoadAssetAtPath<T>(rootPath + path + suffixName);
         return res;
 #else

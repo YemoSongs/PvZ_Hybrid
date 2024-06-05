@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 //知识点
 //字典
@@ -64,108 +65,6 @@ public class ABMgr : SingletonAutoMono<ABMgr>
         }
     }
 
-    /// <summary>
-    /// 加载指定包的依赖包
-    /// </summary>
-    /// <param name="abName"></param>
-    private void LoadDependencies(string abName)
-    {
-        //加载主包
-        LoadMainAB();
-        //获取依赖包
-        string[] strs = manifest.GetAllDependencies(abName);
-        for (int i = 0; i < strs.Length; i++)
-        {
-            if (!abDic.ContainsKey(strs[i]))
-            {
-                AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + strs[i]);
-                abDic.Add(strs[i], ab);
-            }
-        }
-    }
-
-    ///// <summary>
-    ///// 泛型资源同步加载
-    ///// </summary>
-    ///// <typeparam name="T"></typeparam>
-    ///// <param name="abName"></param>
-    ///// <param name="resName"></param>
-    ///// <returns></returns>
-    //public T LoadRes<T>(string abName, string resName) where T:Object
-    //{
-    //    //加载依赖包
-    //    LoadDependencies(abName);
-    //    //加载目标包
-    //    if ( !abDic.ContainsKey(abName) )
-    //    {
-    //        AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + abName);
-    //        abDic.Add(abName, ab);
-    //    }
-
-    //    //得到加载出来的资源
-    //    T obj = abDic[abName].LoadAsset<T>(resName);
-    //    //如果是GameObject 因为GameObject 100%都是需要实例化的
-    //    //所以我们直接实例化
-    //    if (obj is GameObject)
-    //        return Instantiate(obj);
-    //    else
-    //        return obj;
-    //}
-
-    ///// <summary>
-    ///// Type同步加载指定资源
-    ///// </summary>
-    ///// <param name="abName"></param>
-    ///// <param name="resName"></param>
-    ///// <param name="type"></param>
-    ///// <returns></returns>
-    //public Object LoadRes(string abName, string resName, System.Type type) 
-    //{
-    //    //加载依赖包
-    //    LoadDependencies(abName);
-    //    //加载目标包
-    //    if (!abDic.ContainsKey(abName))
-    //    {
-    //        AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + abName);
-    //        abDic.Add(abName, ab);
-    //    }
-
-    //    //得到加载出来的资源
-    //    Object obj = abDic[abName].LoadAsset(resName, type);
-    //    //如果是GameObject 因为GameObject 100%都是需要实例化的
-    //    //所以我们直接实例化
-    //    if (obj is GameObject)
-    //        return Instantiate(obj);
-    //    else
-    //        return obj;
-    //}
-
-    ///// <summary>
-    ///// 名字 同步加载指定资源
-    ///// </summary>
-    ///// <param name="abName"></param>
-    ///// <param name="resName"></param>
-    ///// <returns></returns>
-    //public Object LoadRes(string abName, string resName)
-    //{
-    //    //加载依赖包
-    //    LoadDependencies(abName);
-    //    //加载目标包
-    //    if (!abDic.ContainsKey(abName))
-    //    {
-    //        AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + abName);
-    //        abDic.Add(abName, ab);
-    //    }
-
-    //    //得到加载出来的资源
-    //    Object obj = abDic[abName].LoadAsset(resName);
-    //    //如果是GameObject 因为GameObject 100%都是需要实例化的
-    //    //所以我们直接实例化
-    //    if (obj is GameObject)
-    //        return Instantiate(obj);
-    //    else
-    //        return obj;
-    //}
 
     /// <summary>
     /// 泛型异步加载资源
@@ -181,44 +80,50 @@ public class ABMgr : SingletonAutoMono<ABMgr>
     //正儿八经的 协程函数
     private IEnumerator ReallyLoadResAsync<T>(string abName, string resName, UnityAction<T> callBack, bool isSync) where T : Object
     {
-        //加载主包
-        LoadMainAB();
-        //获取依赖包
-        string[] strs = manifest.GetAllDependencies(abName);
-        for (int i = 0; i < strs.Length; i++)
-        {
-            //还没有加载过该AB包
-            if (!abDic.ContainsKey(strs[i]))
-            {
-                //同步加载
-                if(isSync)
-                {
-                    AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + strs[i]);
-                    abDic.Add(strs[i], ab);
-                }
-                //异步加载
-                else
-                {
-                    //一开始异步加载 就记录 如果此时的记录中的值 是null 那证明这个ab包正在被异步加载
-                    abDic.Add(strs[i], null);
-                    AssetBundleCreateRequest req = AssetBundle.LoadFromFileAsync(PathUrl + strs[i]);
-                    yield return req;
-                    //异步加载结束后 再替换之前的null  这时 不为null 就证明加载结束了
-                    abDic[strs[i]] = req.assetBundle;
-                }
-            }
-            //就证明 字典中已经记录了一个AB包相关信息了
-            else
-            {
-                //如果字典中记录的信息是null 那就证明正在加载中
-                //我们只需要等待它加载结束 就可以继续执行后面的代码了
-                while (abDic[strs[i]] == null)
-                {
-                    //只要发现正在加载中 就不停的等待一帧 下一帧再进行判断
-                    yield return 0;
-                }
-            }
-        }
+       
+
+        ////加载主包
+        //LoadMainAB();
+        ////获取依赖包
+        //string[] strs = manifest.GetAllDependencies(abName);
+        //for (int i = 0; i < strs.Length; i++)
+        //{
+        //    //还没有加载过该AB包
+        //    if (!abDic.ContainsKey(strs[i]))
+        //    {
+        //        //同步加载
+        //        if(isSync)
+        //        {
+        //            AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + strs[i]);
+        //            abDic.Add(strs[i], ab);
+        //        }
+        //        //异步加载
+        //        else
+        //        {
+        //            //一开始异步加载 就记录 如果此时的记录中的值 是null 那证明这个ab包正在被异步加载
+        //            abDic.Add(strs[i], null);
+        //            AssetBundleCreateRequest req = AssetBundle.LoadFromFileAsync(PathUrl + strs[i]);
+        //            yield return req;
+        //            //异步加载结束后 再替换之前的null  这时 不为null 就证明加载结束了
+        //            abDic[strs[i]] = req.assetBundle;
+        //        }
+        //    }
+        //    //就证明 字典中已经记录了一个AB包相关信息了
+        //    else
+        //    {
+        //        //如果字典中记录的信息是null 那就证明正在加载中
+        //        //我们只需要等待它加载结束 就可以继续执行后面的代码了
+        //        while (abDic[strs[i]] == null)
+        //        {
+        //            //只要发现正在加载中 就不停的等待一帧 下一帧再进行判断
+        //            yield return 0;
+        //        }
+        //    }
+        //}
+
+
+        yield return LoadDependencies(abName, isSync);
+
         //加载目标包
         if (!abDic.ContainsKey(abName))
         {
@@ -280,44 +185,48 @@ public class ABMgr : SingletonAutoMono<ABMgr>
 
     private IEnumerator ReallyLoadResAsync(string abName, string resName, System.Type type, UnityAction<Object> callBack, bool isSync)
     {
-        //加载主包
-        LoadMainAB();
-        //获取依赖包
-        string[] strs = manifest.GetAllDependencies(abName);
-        for (int i = 0; i < strs.Length; i++)
-        {
-            //还没有加载过该AB包
-            if (!abDic.ContainsKey(strs[i]))
-            {
-                //同步加载
-                if (isSync)
-                {
-                    AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + strs[i]);
-                    abDic.Add(strs[i], ab);
-                }
-                //异步加载
-                else
-                {
-                    //一开始异步加载 就记录 如果此时的记录中的值 是null 那证明这个ab包正在被异步加载
-                    abDic.Add(strs[i], null);
-                    AssetBundleCreateRequest req = AssetBundle.LoadFromFileAsync(PathUrl + strs[i]);
-                    yield return req;
-                    //异步加载结束后 再替换之前的null  这时 不为null 就证明加载结束了
-                    abDic[strs[i]] = req.assetBundle;
-                }
-            }
-            //就证明 字典中已经记录了一个AB包相关信息了
-            else
-            {
-                //如果字典中记录的信息是null 那就证明正在加载中
-                //我们只需要等待它加载结束 就可以继续执行后面的代码了
-                while (abDic[strs[i]] == null)
-                {
-                    //只要发现正在加载中 就不停的等待一帧 下一帧再进行判断
-                    yield return 0;
-                }
-            }
-        }
+        ////加载主包
+        //LoadMainAB();
+        ////获取依赖包
+        //string[] strs = manifest.GetAllDependencies(abName);
+        //for (int i = 0; i < strs.Length; i++)
+        //{
+        //    //还没有加载过该AB包
+        //    if (!abDic.ContainsKey(strs[i]))
+        //    {
+        //        //同步加载
+        //        if (isSync)
+        //        {
+        //            AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + strs[i]);
+        //            abDic.Add(strs[i], ab);
+        //        }
+        //        //异步加载
+        //        else
+        //        {
+        //            //一开始异步加载 就记录 如果此时的记录中的值 是null 那证明这个ab包正在被异步加载
+        //            abDic.Add(strs[i], null);
+        //            AssetBundleCreateRequest req = AssetBundle.LoadFromFileAsync(PathUrl + strs[i]);
+        //            yield return req;
+        //            //异步加载结束后 再替换之前的null  这时 不为null 就证明加载结束了
+        //            abDic[strs[i]] = req.assetBundle;
+        //        }
+        //    }
+        //    //就证明 字典中已经记录了一个AB包相关信息了
+        //    else
+        //    {
+        //        //如果字典中记录的信息是null 那就证明正在加载中
+        //        //我们只需要等待它加载结束 就可以继续执行后面的代码了
+        //        while (abDic[strs[i]] == null)
+        //        {
+        //            //只要发现正在加载中 就不停的等待一帧 下一帧再进行判断
+        //            yield return 0;
+        //        }
+        //    }
+        //}
+
+
+        yield return LoadDependencies(abName, isSync);
+
         //加载目标包
         if (!abDic.ContainsKey(abName))
         {
@@ -377,44 +286,49 @@ public class ABMgr : SingletonAutoMono<ABMgr>
 
     private IEnumerator ReallyLoadResAsync(string abName, string resName, UnityAction<Object> callBack, bool isSync)
     {
-        //加载主包
-        LoadMainAB();
-        //获取依赖包
-        string[] strs = manifest.GetAllDependencies(abName);
-        for (int i = 0; i < strs.Length; i++)
-        {
-            //还没有加载过该AB包
-            if (!abDic.ContainsKey(strs[i]))
-            {
-                //同步加载
-                if (isSync)
-                {
-                    AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + strs[i]);
-                    abDic.Add(strs[i], ab);
-                }
-                //异步加载
-                else
-                {
-                    //一开始异步加载 就记录 如果此时的记录中的值 是null 那证明这个ab包正在被异步加载
-                    abDic.Add(strs[i], null);
-                    AssetBundleCreateRequest req = AssetBundle.LoadFromFileAsync(PathUrl + strs[i]);
-                    yield return req;
-                    //异步加载结束后 再替换之前的null  这时 不为null 就证明加载结束了
-                    abDic[strs[i]] = req.assetBundle;
-                }
-            }
-            //就证明 字典中已经记录了一个AB包相关信息了
-            else
-            {
-                //如果字典中记录的信息是null 那就证明正在加载中
-                //我们只需要等待它加载结束 就可以继续执行后面的代码了
-                while (abDic[strs[i]] == null)
-                {
-                    //只要发现正在加载中 就不停的等待一帧 下一帧再进行判断
-                    yield return 0;
-                }
-            }
-        }
+        ////加载主包
+        //LoadMainAB();
+        ////获取依赖包
+        //string[] strs = manifest.GetAllDependencies(abName);
+        //for (int i = 0; i < strs.Length; i++)
+        //{
+        //    //还没有加载过该AB包
+        //    if (!abDic.ContainsKey(strs[i]))
+        //    {
+        //        //同步加载
+        //        if (isSync)
+        //        {
+        //            AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + strs[i]);
+        //            abDic.Add(strs[i], ab);
+        //        }
+        //        //异步加载
+        //        else
+        //        {
+        //            //一开始异步加载 就记录 如果此时的记录中的值 是null 那证明这个ab包正在被异步加载
+        //            abDic.Add(strs[i], null);
+        //            AssetBundleCreateRequest req = AssetBundle.LoadFromFileAsync(PathUrl + strs[i]);
+        //            yield return req;
+        //            //异步加载结束后 再替换之前的null  这时 不为null 就证明加载结束了
+        //            abDic[strs[i]] = req.assetBundle;
+        //        }
+        //    }
+        //    //就证明 字典中已经记录了一个AB包相关信息了
+        //    else
+        //    {
+        //        //如果字典中记录的信息是null 那就证明正在加载中
+        //        //我们只需要等待它加载结束 就可以继续执行后面的代码了
+        //        while (abDic[strs[i]] == null)
+        //        {
+        //            //只要发现正在加载中 就不停的等待一帧 下一帧再进行判断
+        //            yield return 0;
+        //        }
+        //    }
+        //}
+
+
+        yield return LoadDependencies(abName, isSync);
+
+
         //加载目标包
         if (!abDic.ContainsKey(abName))
         {
@@ -461,6 +375,97 @@ public class ABMgr : SingletonAutoMono<ABMgr>
         }
 
     }
+
+
+
+
+    /// <summary>
+    /// 加载依赖包
+    /// </summary>
+    /// <param name="abName">包名</param>
+    /// <param name="isSync"></param>
+    /// <returns></returns>
+    private IEnumerator LoadDependencies(string abName, bool isSync)
+    {
+        LoadMainAB();
+        string[] dependencies = manifest.GetAllDependencies(abName);
+
+        foreach (string dep in dependencies)
+        {
+            if (!abDic.ContainsKey(dep))
+            {
+                if (isSync)
+                {
+                    AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + dep);
+                    abDic.Add(dep, ab);
+                }
+                else
+                {
+                    abDic.Add(dep, null);
+                    AssetBundleCreateRequest req = AssetBundle.LoadFromFileAsync(PathUrl + dep);
+                    yield return req;
+                    abDic[dep] = req.assetBundle;
+                }
+            }
+            else
+            {
+                while (abDic[dep] == null)
+                {
+                    yield return null;
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// 异步加载场景资源
+    /// </summary>
+    /// <param name="bundlePath"></param>
+    /// <param name="sceneName"></param>
+    public void LoadSceneFromAssetBundle(string abName, string sceneName)
+    {
+        StartCoroutine(LoadSceneFromAssetBundleCoroutine(abName, sceneName));
+    }
+
+    private IEnumerator LoadSceneFromAssetBundleCoroutine(string abName, string sceneName)
+    {
+
+        AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(PathUrl+abName);
+        yield return bundleRequest;
+
+        AssetBundle bundle = bundleRequest.assetBundle;
+
+        if (bundle == null)
+        {
+            Debug.LogError("Failed to load AssetBundle!");
+            yield break;
+        }
+
+        if (bundle.isStreamedSceneAssetBundle)
+        {
+
+            yield return LoadDependencies(abName, false);
+
+            string[] scenePaths = bundle.GetAllScenePaths();
+            foreach (string scenePath in scenePaths)
+            {
+                Debug.Log("Scene in AssetBundle: " + scenePath);
+            }
+
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+        }
+        else
+        {
+            Debug.LogError("The AssetBundle does not contain streamed scenes.");
+        }
+    }
+
+
 
     //卸载AB包的方法
     public void UnLoadAB(string name, UnityAction<bool> callBackResult)

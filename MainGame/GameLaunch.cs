@@ -28,6 +28,6 @@ public class GameLaunch : MonoBehaviour
 
         MusicMgr.Instance.ChangeSoundValue(soundValue);
 
-
+        print("[GameLaunch]>>>>游戏开始");
     }
 }
