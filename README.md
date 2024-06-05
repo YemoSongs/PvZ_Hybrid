@@ -7,3 +7,5 @@
   5. 新添加Localizated本地化模块
 * 6.5
   1. 新建Git仓库，并将Scripts上传到GitHub
+  2. 完善了UI界面，新增GameScene
+  3. 给小框架补充了为场景资源ab包加载的方法，并完善了代码
