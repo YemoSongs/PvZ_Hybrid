@@ -9,3 +9,7 @@
   1. 新建Git仓库，并将Scripts上传到GitHub
   2. 完善了UI界面，新增GameScene
   3. 给小框架补充了为场景资源ab包加载的方法，并完善了代码
+* 6.6
+  1. 新增Grid，GridCell，GameGrid脚本用于之后处理植物种植的网格
+  2. 新增了ChoosePlantsPanel，PlantCardsPanel
+  3. 添加了LevelPanel与ChoosePlantsPanel之间的动画

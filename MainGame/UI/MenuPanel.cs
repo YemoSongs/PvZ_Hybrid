@@ -50,19 +50,8 @@ public class MenuPanel : BasePanel
     }
     void Btn_AdventureMode_OnClick()
     {
-
-        //ABResMgr.Instance.LoadResAsync<SceneAsset>("scene", "GameScene", (res) =>
-        //{
-        //    SceneMgr.Instance.LoadSceneAsyn("GameScene");
-        //});
-
-
-        //ABMgr.Instance.LoadSceneFromAssetBundle("scene", "GameScene");
-        SceneMgr.Instance.LoadSceneAsyn("scene", "GameScene", () =>
-        {
-            UIMgr.Instance.HidePanel<MenuPanel>();
-            UIMgr.Instance.ShowPanel<LevelPanel>();
-        });
+        UIMgr.Instance.ShowPanel<LevelPanel>();
+        UIMgr.Instance.HidePanel<MenuPanel>();
     }
     void Btn_MiniMode_OnClick()
     {
