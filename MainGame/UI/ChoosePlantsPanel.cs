@@ -9,6 +9,11 @@ public class ChoosePlantsPanel : BasePanel
 {
     #region 自定义字段，属性
 
+    public List<PlantCard> plantCards;
+    public Transform SV_Content;
+
+    public GameGrid gameGrid;
+
     #endregion    
 
     public override void HideMe()
@@ -18,10 +23,21 @@ public class ChoosePlantsPanel : BasePanel
 
     public override void ShowMe()
     {
-        
+        ShowPlantCards();
+
+        gameGrid = GameObject.Find("Grid").GetComponent<GameGrid>();
     }
 
     #region 自定义函数
+
+    void ShowPlantCards()
+    {
+        for (int i = 0; i < plantCards.Count; i++)
+        {
+            GameObject card = Instantiate(plantCards[i].gameObject,SV_Content);
+        }
+    }
+
 
     #endregion
     
@@ -37,7 +53,15 @@ public class ChoosePlantsPanel : BasePanel
     {
         //判断选择的植物是否符合要求
 
+
+        UIMgr.Instance.GetPanel<PlantCardsPanel>((panel) =>
+        {
+            panel.GameStart();
+            panel.gameGrid = gameGrid;
+        });
         
+        gameGrid.StartGrid();
+        Camera.main.transform.DOMoveX(0, 3).SetEase(Ease.InOutQuad);
         UIMgr.Instance.HidePanel<ChoosePlantsPanel>(true);
 
     }
@@ -55,14 +79,18 @@ public class ChoosePlantsPanel : BasePanel
         // 计算目标位置
         Vector3 targetPosition = uiPanel.localPosition - new Vector3(0, panelHeight, 0);
 
-        uiPanel.DOLocalMoveY(targetPosition.y, 3).SetEase(Ease.InOutQuad);
+        uiPanel.DOLocalMoveY(targetPosition.y, 3).SetEase(Ease.InOutQuad).OnComplete(() =>
+        {
+            GetControl<Button>("Btn_OpenThis").gameObject.SetActive(true);
+        });
         Camera.main.transform.DOMoveX(-15, 5).SetEase(Ease.InOutQuad);
-        GetControl<Button>("Btn_OpenThis").gameObject.SetActive(true);
+        
     }
 
 
     void Btn_OpenThis_OnClick()
     {
+        GetControl<Button>("Btn_OpenThis").gameObject.SetActive(false);
         RectTransform uiPanel = gameObject.GetComponent<RectTransform>();
         // 获取UIPanel的高度
         float panelHeight = uiPanel.rect.height;
@@ -71,7 +99,7 @@ public class ChoosePlantsPanel : BasePanel
 
         uiPanel.DOLocalMoveY(targetPosition.y, 3).SetEase(Ease.InOutQuad);
         Camera.main.transform.DOMoveX(25, 5).SetEase(Ease.InOutQuad);
-        GetControl<Button>("Btn_OpenThis").gameObject.SetActive(false);
+        
     }
 
 

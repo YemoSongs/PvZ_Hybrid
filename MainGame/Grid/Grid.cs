@@ -43,9 +43,8 @@ public class Grid<TGridObject>
         }
 
         // 显示调试信息
-        bool showDebug = true;
+        bool showDebug = false;
         if (showDebug)
-
         {
             TextMesh[,] debugTextArray = new TextMesh[width, height];
 

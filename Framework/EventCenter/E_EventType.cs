@@ -46,4 +46,9 @@ public enum E_EventType
     /// 竖直热键 -1~1的事件监听
     /// </summary>
     E_Input_Vertical,
+
+    /// <summary>
+    /// 鼠标右键的按下
+    /// </summary>
+    E_Input_RMouseDown
 }
