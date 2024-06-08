@@ -70,38 +70,74 @@ public class Grid<TGridObject>
         }
     }
 
-    // 获取网格宽度
+    /// <summary>
+    /// 获取网格宽度
+    /// </summary>
+    /// <returns></returns>
     public int GetWidth()
     {
         return width;
     }
 
-    // 获取网格高度
+    /// <summary>
+    /// 获取网格高度
+    /// </summary>
+    /// <returns></returns>
     public int GetHeight()
     {
         return height;
     }
 
-    // 获取单元格大小
+    /// <summary>
+    /// 获取单元格大小
+    /// </summary>
+    /// <returns></returns>
     public float GetCellSize()
     {
         return cellSize;
     }
 
-    // 根据网格坐标获取世界坐标
+    /// <summary>
+    /// 根据网格坐标获取网格起始点世界坐标
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
     public Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x, y) * cellSize + originPosition;
     }
 
-    // 根据世界坐标获取网格坐标
+    /// <summary>
+    /// 根据网格坐标获取网格中心点的世界坐标
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public Vector3 GetWorldPositionCenter(int x, int y)
+    {
+        return new Vector3(x, y) * cellSize + originPosition + new Vector3(cellSize, cellSize) * .5f;
+    }
+
+
+    /// <summary>
+    /// 根据世界坐标获取网格坐标
+    /// </summary>
+    /// <param name="worldPosition"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     public void GetXY(Vector3 worldPosition, out int x, out int y)
     {
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
     }
 
-    // 设置指定坐标的网格对象
+    /// <summary>
+    /// 设置指定坐标的网格对象
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="value"></param>
     public void SetGridObject(int x, int y, TGridObject value)
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
@@ -112,13 +148,21 @@ public class Grid<TGridObject>
         }
     }
 
-    // 手动触发网格对象变化事件
+    /// <summary>
+    /// 手动触发网格对象变化事件
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     public void TriggerGridObjectChanged(int x, int y)
     {
         if (OnGridObjectChanged != null) OnGridObjectChanged(this, new OnGridObjectChangedEventArgs { x = x, y = y });
     }
 
-    // 根据世界坐标设置网格对象
+    /// <summary>
+    /// 根据世界坐标设置网格对象
+    /// </summary>
+    /// <param name="worldPosition"></param>
+    /// <param name="value"></param>
     public void SetGridObject(Vector3 worldPosition, TGridObject value)
     {
         int x, y;
@@ -126,7 +170,12 @@ public class Grid<TGridObject>
         SetGridObject(x, y, value);
     }
 
-    // 获取指定坐标的网格对象
+    /// <summary>
+    /// 获取指定坐标的网格对象
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
     public TGridObject GetGridObject(int x, int y)
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
@@ -139,7 +188,11 @@ public class Grid<TGridObject>
         }
     }
 
-    // 根据世界坐标获取网格对象
+    /// <summary>
+    /// 根据世界坐标获取网格对象
+    /// </summary>
+    /// <param name="worldPosition"></param>
+    /// <returns></returns>
     public TGridObject GetGridObject(Vector3 worldPosition)
     {
         int x, y;

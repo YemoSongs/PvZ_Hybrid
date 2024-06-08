@@ -4,20 +4,28 @@ public class GameGrid : MonoBehaviour
 {
     private Grid<GridCell> grid;
 
-    public int width = 9;
-    public int height = 5;
-    public float cellSize = 5.0f;
-    public Vector3 originPosition = new Vector3(-4, -2, 0);
-
-    private void Start()
-    {
-        //grid = new Grid<GridCell>(width, height, cellSize, originPosition, (Grid<GridCell> g, int x, int y) => new GridCell());
-    }
+    public  int width = 9;
+    public  int height = 5;
+    public  float cellSize;
+    public Vector3 originPosition;
 
 
     public void StartGrid()
     {
-        grid = new Grid<GridCell>(width, height, cellSize, originPosition, (Grid<GridCell> g, int x, int y) => new GridCell());
+        grid = new Grid<GridCell>(width, height, cellSize, originPosition, (Grid<GridCell> g, int x, int y) => new GridCell(x,y));
+    }
+
+
+
+    public bool CanPlacePlant(Vector3 worldPosition)
+    {
+        int x, y;
+        grid.GetXY(worldPosition, out x, out y);
+        GridCell cell = grid.GetGridObject(x, y);
+        if (cell == null)
+            return false;
+
+        return cell.IsEmpty;
     }
 
 
@@ -27,9 +35,14 @@ public class GameGrid : MonoBehaviour
         int x, y;
         grid.GetXY(worldPosition, out x, out y);
         GridCell cell = grid.GetGridObject(x, y);
+        print(cell.pos);
         if (cell.IsEmpty)
         {
             cell.PlaceObject(plant);
+            cell.gameGrid = this;
+            plant.transform.SetParent(transform, false);
+            plant.transform.position = grid.GetWorldPositionCenter(x, y);
+
             grid.TriggerGridObjectChanged(x, y);
             return true;
         }

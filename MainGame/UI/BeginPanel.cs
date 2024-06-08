@@ -50,25 +50,11 @@ public class BeginPanel : BasePanel
 
     void Loading()
     {
-        /*Timer管理器来计时
-        int timer = TimerMgr.Instance.CreateTimer(false, (int)(loadingTime*1000), () =>
-        {
-            progressBar.SetProgress(1);
-        }, 200, () =>
-        {
-            time += 200;
-            progressBar.SetProgress(time / (int)(loadingTime * 1000));
-        });
-        TimerMgr.Instance.StartTimer(timer);*/
-
-
         //用Dotween来计时
         DOVirtual.Float(time, loadingTime, loadingTime, OnValueChanged).onComplete += () =>
         {
             progressBar.SetProgress(1);
-        };//.SetLoops(-1, LoopType.Incremental);
-
-
+        };
     }
     /// <summary>
     /// 在值变化时的回调函数

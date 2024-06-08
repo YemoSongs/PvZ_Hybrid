@@ -1,3 +1,4 @@
+using CodeMonkey.Utils;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +33,9 @@ public class PlantCardsPanel : BasePanel
 
     #region 自定义函数
 
+    /// <summary>
+    /// 正式开始游戏
+    /// </summary>
     public void GameStart()
     {
         if(onPlantCards.Count > 0)
@@ -39,7 +43,6 @@ public class PlantCardsPanel : BasePanel
             foreach(PlantCard plantCard in onPlantCards)
             {
                 plantCard.isStartGame = true;
-                plantCard.gameGrid = gameGrid;
             }
         }
 
@@ -47,7 +50,7 @@ public class PlantCardsPanel : BasePanel
         MonoMgr.Instance.AddUpdateListener(MouseListener);
     }
 
-
+    //鼠标状态监听
     void MouseListener()
     {
         if(isSelecting)
@@ -58,16 +61,64 @@ public class PlantCardsPanel : BasePanel
 
                 isSelecting = false;
                 isSelectCard.isSelected = false;
+                isSelectCard.SetIsSelected();
+                print(isSelectCard.isSelected);
                 isSelectCard = null;
 
             }//选中状态，左键就是种植（种植成功或种植失败都是取消选中）
             else if (Input.GetMouseButtonDown(0))
             {
-                print("种植" + isSelectCard.plant.gameObject.name);
+                print("种植" + isSelectCard.plant.gameObject.name + UtilsClass.GetMouseWorldPosition());
+
+                PlacePlant(UtilsClass.GetMouseWorldPosition());
             }
 
         }
     }
+
+    /// <summary>
+    /// 放置植物
+    /// </summary>
+    /// <param name="worldPosition"></param>
+    public void PlacePlant(Vector3 worldPosition)
+    {
+
+        if(isSelecting && isSelectCard!=null)
+        {
+
+            if(gameGrid.CanPlacePlant(worldPosition))
+            {
+                ABResMgr.Instance.LoadResAsync<GameObject>("plant", isSelectCard.plant.plantName, (res) =>
+                {
+                    GameObject plant = Instantiate(res);
+
+                    gameGrid.PlacePlant(worldPosition, plant);
+
+                    isSelecting = false;
+                    isSelectCard.isSelected = false;
+                    isSelectCard.SetIsSelected();
+                    print(isSelectCard.isSelected);
+                    //设置植物种植CD
+                    isSelectCard.StartCoolDown();
+                    isSelectCard = null;
+
+                    
+                });
+            }
+            else
+            {
+                print("当前位置不可种植");
+                isSelecting = false;
+                isSelectCard.isSelected = false;
+                isSelectCard.SetIsSelected();
+                print(isSelectCard.isSelected);
+                isSelectCard = null;
+
+            }
+        }        
+    }
+
+
 
 
     #endregion

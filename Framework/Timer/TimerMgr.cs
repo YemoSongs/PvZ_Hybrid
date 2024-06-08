@@ -87,6 +87,9 @@ public class TimerMgr : BaseManager<TimerMgr>
                         item.intervalTime = item.maxIntervalTime;
                     }
                 }
+                //如果总时间为-1，则表示无限时长
+                if (item.allTime == -1)
+                    continue;
                 //总的时间更新
                 item.allTime -= (int)(intervalTime * 1000);
                 //计时时间到 需要执行完成回调函数
@@ -134,6 +137,35 @@ public class TimerMgr : BaseManager<TimerMgr>
             timerDic.Add(keyID, timerItem);
         return keyID;
     }
+
+
+    /// <summary>
+    /// 创建单个计时器(无限时间)
+    /// </summary>
+    /// <param name="isRealTime">如果是true不受Time.timeScale影响</param>
+    /// <param name="intervalTime">间隔计时时间 毫秒 1s=1000ms</param>
+    /// <param name="callBack">间隔计时时间结束 回调</param>
+    /// <returns></returns>
+    public int CreateTimer(bool isRealTime, int intervalTime = 0, UnityAction callBack = null)
+    {
+        //构建唯一ID
+        int keyID = ++TIMER_KEY;
+        //从缓存池取出对应的计时器
+        TimerItem timerItem = PoolMgr.Instance.GetObj<TimerItem>();
+        //初始化数据
+        timerItem.InitInfo(keyID, -1, () => { }, intervalTime, callBack);
+        //记录到字典中 进行数据更新
+        if (isRealTime)
+            realTimerDic.Add(keyID, timerItem);
+        else
+            timerDic.Add(keyID, timerItem);
+        return keyID;
+    }
+
+
+
+
+
 
     //移除单个计时器
     public void RemoveTimer(int keyID)
