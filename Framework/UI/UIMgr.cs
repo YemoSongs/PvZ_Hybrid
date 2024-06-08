@@ -55,7 +55,7 @@ public class UIMgr : BaseManager<UIMgr>
     }
 
 
-    private Camera uiCamera;
+    public Camera uiCamera;
     private Canvas uiCanvas;
     private EventSystem uiEventSystem;
 

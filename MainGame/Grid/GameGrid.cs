@@ -12,10 +12,8 @@ public class GameGrid : MonoBehaviour
 
     public void StartGrid()
     {
-        grid = new Grid<GridCell>(width, height, cellSize, originPosition, (Grid<GridCell> g, int x, int y) => new GridCell(x,y));
+        grid = new Grid<GridCell>(width, height, cellSize, originPosition, (Grid<GridCell> g, int x, int y) => new GridCell(x,y,this));
     }
-
-
 
     public bool CanPlacePlant(Vector3 worldPosition)
     {
@@ -39,14 +37,18 @@ public class GameGrid : MonoBehaviour
         if (cell.IsEmpty)
         {
             cell.PlaceObject(plant);
-            cell.gameGrid = this;
+            
             plant.transform.SetParent(transform, false);
             plant.transform.position = grid.GetWorldPositionCenter(x, y);
-
-            grid.TriggerGridObjectChanged(x, y);
             return true;
         }
         return false;
+    }
+
+
+    public void TriggerGridObjectChanged(int x, int y)
+    {
+        grid.TriggerGridObjectChanged(x, y);
     }
 
     public bool RemovePlant(Vector3 worldPosition)

@@ -46,10 +46,15 @@ public abstract class Plant : MonoBehaviour
     }
 
 
-    // 攻击方法，由子类实现具体攻击行为
+    /// <summary>
+    /// 攻击方法，由子类实现具体攻击行为
+    /// </summary>
     protected abstract void Attack();
 
-    // 受伤方法，当植物受到伤害时调用
+    /// <summary>
+    /// 受伤方法，当植物受到伤害时调用
+    /// </summary>
+    /// <param name="damage">受到多少伤害</param>
     public virtual void TakeDamage(int damage)
     {
         health -= damage;
@@ -59,7 +64,21 @@ public abstract class Plant : MonoBehaviour
         }
     }
 
-    // 植物死亡时的处理方法
+    /// <summary>
+    /// 被铲子铲的方法
+    /// </summary>
+    public virtual void BeShoveled()
+    {
+        gridCell.RemoveObject();
+
+        Die();
+    }
+
+
+
+    /// <summary>
+    /// 植物死亡时的处理方法
+    /// </summary>
     protected virtual void Die()
     {
         TimerMgr.Instance.RemoveTimer(attackTimer); 

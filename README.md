@@ -13,3 +13,11 @@
   1. 新增Grid，GridCell，GameGrid脚本用于之后处理植物种植的网格
   2. 新增了ChoosePlantsPanel，PlantCardsPanel
   3. 添加了LevelPanel与ChoosePlantsPanel之间的动画
+* 6.7
+  1. 主要处理了植物类和植物卡片的关系
+  2. 在UI是基本做到了选择植物到备战席
+  3. 处理了小部分植物卡片在开始游戏后的逻辑
+* 6.8
+  1. 实现了植物基类，豌豆射手的攻击和检测僵尸
+  2. 实现了植物卡片在选中时和CD状态的效果
+  3. 实现了植物的种植，以及用铲子移除

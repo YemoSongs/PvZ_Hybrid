@@ -3,21 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PlantCardsPanel : BasePanel
 {
     #region 自定义字段，属性
 
-    public List<PlantCard> onPlantCards;
-    public Transform SV_Content;
-    
-    public bool isSelecting = false;
+    public List<PlantCard> onPlantCards;                //上阵的植物列表
+    public Transform SV_Content;                        //植物的父对象
 
-    public PlantCard isSelectCard;
+    public bool isGameStart = false;                    //是否是游戏开始状态
+    public bool isSelecting = false;                    //是否有植物处在选中状态
 
-    public GameGrid gameGrid;
+    public PlantCard isSelectCard;                      //选中的植物卡片
 
-    //private bool isAddMouseListener = false;
+    public GameGrid gameGrid;                           //游戏网格
+
+    [SerializeField] private RectTransform shovel;      //铲子
+
+    private bool isShovelActive = false;                // 是否处于铲子激活状态
+    private Vector3 originalShovelPosition;             // 铲子原始位置
+
 
     #endregion    
 
@@ -28,7 +34,7 @@ public class PlantCardsPanel : BasePanel
 
     public override void ShowMe()
     {
-        
+        originalShovelPosition = shovel.anchoredPosition;
     }
 
     #region 自定义函数
@@ -38,6 +44,7 @@ public class PlantCardsPanel : BasePanel
     /// </summary>
     public void GameStart()
     {
+        //遍历所有上阵的卡片，设置为游戏开始状态
         if(onPlantCards.Count > 0)
         {
             foreach(PlantCard plantCard in onPlantCards)
@@ -46,7 +53,9 @@ public class PlantCardsPanel : BasePanel
             }
         }
 
+        isGameStart = true;
 
+        //添加鼠标左右键监听
         MonoMgr.Instance.AddUpdateListener(MouseListener);
     }
 
@@ -73,6 +82,21 @@ public class PlantCardsPanel : BasePanel
                 PlacePlant(UtilsClass.GetMouseWorldPosition());
             }
 
+        }
+
+
+        if (isShovelActive && isGameStart)
+        {
+            FollowMouse();
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                ShovelPlant();
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                CancelShovel();
+            }
         }
     }
 
@@ -120,13 +144,69 @@ public class PlantCardsPanel : BasePanel
 
 
 
+    /// <summary>
+    /// 让铲子图片跟随鼠标
+    /// </summary>
+    void FollowMouse()
+    {
+        Vector2 mousePos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)shovel.parent, Input.mousePosition, UIMgr.Instance.uiCamera, out mousePos);
+        shovel.anchoredPosition = mousePos;
+    }
+
+    /// <summary>
+    /// 铲子点击植物对象
+    /// </summary>
+    void ShovelPlant()
+    {
+        // 射线检测点击位置
+
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        // 发射射线并检测碰撞
+        if (Physics.Raycast(ray, out hit))
+        {
+            // 获取射线碰撞到的对象的信息
+            GameObject hitObject = hit.collider.gameObject;
+            Debug.Log("Hit object: " + hitObject.name);
+
+            if (hit.collider != null)
+            {
+                Plant plant = hit.collider.GetComponent<Plant>();
+                if (plant != null)
+                {
+                    plant.BeShoveled();
+                    CancelShovel();
+                }
+            }
+        }
+       
+        else
+        {
+            CancelShovel();
+        }
+    }
+
+    // 取消铲子操作
+    void CancelShovel()
+    {
+        isShovelActive = false;
+        shovel.anchoredPosition = originalShovelPosition;
+        shovel.gameObject.SetActive(false);
+    }
 
     #endregion
 
     #region 控件事件监听
+
+
+    //铲子按钮
     void Btn_Shovel_OnClick()
     {
-        
+        isShovelActive = true;
+        shovel.gameObject.SetActive(true);
+        shovel.SetAsLastSibling(); // 将铲子图片置于最前
     }
 
 
