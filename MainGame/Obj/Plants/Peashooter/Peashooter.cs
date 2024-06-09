@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class Peashooter : Plant
 {
-    public GameObject peaPrefab; // 豌豆的预制体
+
     public Transform shootPoint; // 发射点
+
     private float attackRange = 5f; // 攻击范围的长度
     private float attackWidth = 5f; // 攻击范围的宽度
-    public LayerMask enemyLayer; // 敌人层级
+
 
     protected override void Start()
     {
@@ -35,7 +36,7 @@ public class Peashooter : Plant
             pea.transform.localPosition = Vector3.zero;
             pea.transform.localRotation = Quaternion.identity;
             // 设置豌豆的具体行为，比如设置速度等
-            pea.GetComponent<Pea>().Init(10, 20);
+            pea.GetComponent<Pea>().Init(data.bulletData);
         }
     }
 
@@ -46,7 +47,7 @@ public class Peashooter : Plant
         Vector3 halfExtents = new Vector3(attackWidth / 2, attackRange / 2, 1 );
 
         // 检测前方的敌人
-        Collider[] enemies = Physics.OverlapBox(center, halfExtents, transform.rotation, enemyLayer);
+        Collider[] enemies = Physics.OverlapBox(center, halfExtents, transform.rotation, data.enemyLayer);
         return enemies.Length > 0;
     }
 

@@ -112,7 +112,7 @@ public class PlantCardsPanel : BasePanel
 
             if(gameGrid.CanPlacePlant(worldPosition))
             {
-                ABResMgr.Instance.LoadResAsync<GameObject>("plant", isSelectCard.plant.plantName, (res) =>
+                ABResMgr.Instance.LoadResAsync<GameObject>("plant", isSelectCard.plant.data.plantName, (res) =>
                 {
                     GameObject plant = Instantiate(res);
 
@@ -193,7 +193,7 @@ public class PlantCardsPanel : BasePanel
     {
         isShovelActive = false;
         shovel.anchoredPosition = originalShovelPosition;
-        shovel.gameObject.SetActive(false);
+        //shovel.gameObject.SetActive(false);
     }
 
     #endregion
@@ -205,7 +205,7 @@ public class PlantCardsPanel : BasePanel
     void Btn_Shovel_OnClick()
     {
         isShovelActive = true;
-        shovel.gameObject.SetActive(true);
+        //shovel.gameObject.SetActive(true);
         shovel.SetAsLastSibling(); // 将铲子图片置于最前
     }
 

@@ -40,8 +40,8 @@ public class PlantCard : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void Start()
     {
-        card = plant.cardImg;
-        onCard = plant.onCardImg;
+        card = plant.data.cardImg;
+        onCard = plant.data.onCardImg;
         img_Card.sprite = card;
         img_CD.gameObject.SetActive(false);
 
@@ -56,7 +56,7 @@ public class PlantCard : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             {
 
                 GameObject card = Instantiate(gameObject,plantCardsPanel.SV_Content);
-                card.GetComponent<RectTransform>().sizeDelta = new Vector2(105, 148);
+                card.GetComponent<RectTransform>().sizeDelta = new Vector2(93, 130);
                 PlantCard plantCard = card.GetComponent<PlantCard>();
                 plantCard.rootPlantCard = gameObject;
                 plantCard.isOnCardsPanel = true;
@@ -110,7 +110,7 @@ public class PlantCard : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             isCoolDown = true;
             img_CD.gameObject.SetActive(true); // 确保冷却遮罩启用
 
-            DOVirtual.Float(1, 0, plant.coolDown, (value) =>
+            DOVirtual.Float(1, 0, plant.data.coolDown, (value) =>
             {
                 img_CD.fillAmount = value;
             }).SetEase(Ease.Linear).onComplete += () =>

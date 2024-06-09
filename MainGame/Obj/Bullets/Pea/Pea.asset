@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d110cdf9abf48754ebb0c018872ce60e, type: 3}
+  m_Name: Pea
+  m_EditorClassIdentifier: 
+  bulletName: Pea
+  damage: 20
+  speed: 10
+  bulletSprite: {fileID: 21300000, guid: b7fcd2d31f78b4e48a90d2199e8bd3e9, type: 3}
+  atkLayer:
+    serializedVersion: 2
+    m_Bits: 512

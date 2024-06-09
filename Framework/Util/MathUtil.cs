@@ -252,4 +252,11 @@ public class MathUtil
         }
     }
     #endregion
+
+    #region 层级判断
+    public static bool IsLayerInLayerMask(int layer, LayerMask layerMask)
+    {
+        return (layerMask.value & (1 << layer)) != 0;
+    }
+    #endregion
 }
