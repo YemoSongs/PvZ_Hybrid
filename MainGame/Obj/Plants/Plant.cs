@@ -17,11 +17,30 @@ public abstract class Plant : MonoBehaviour
     protected int attackTimer;              //攻击间隔计时器
 
 
+
+
+    private Animator animator;
+    [SerializeField] private string currentAnimation = "";
+
+
+    protected virtual void ChangeAnimation(string animation, float crossfade = 0.2f)
+    {
+        if (currentAnimation != animation)
+        {
+            currentAnimation = animation;
+            animator.CrossFade(animation, crossfade);
+        }
+    }
+
+
+
+
     protected virtual void Start()
     {
         PlantTimer();
 
         currentHealth = data.maxHealth;
+        animator = GetComponentInChildren<Animator>();
     }
 
     /// <summary>

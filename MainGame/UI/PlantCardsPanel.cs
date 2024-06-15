@@ -1,6 +1,7 @@
 using CodeMonkey.Utils;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -24,7 +25,8 @@ public class PlantCardsPanel : BasePanel
     private bool isShovelActive = false;                // 是否处于铲子激活状态
     private Vector3 originalShovelPosition;             // 铲子原始位置
 
-
+    public TextMeshProUGUI sunNum;    //太阳的数量
+ 
     #endregion    
 
     public override void HideMe()
@@ -57,6 +59,17 @@ public class PlantCardsPanel : BasePanel
 
         //添加鼠标左右键监听
         MonoMgr.Instance.AddUpdateListener(MouseListener);
+
+
+
+        ABResMgr.Instance.LoadResAsync<LevelData>("leveldata", "LevelData_1", (res) =>
+        {
+            Level test = new Level(res);
+            LevelMgr.Instance.StartLevel(test);
+            
+        });
+
+       
     }
 
     //鼠标状态监听
@@ -110,7 +123,7 @@ public class PlantCardsPanel : BasePanel
         if(isSelecting && isSelectCard!=null)
         {
 
-            if(gameGrid.CanPlacePlant(worldPosition))
+            if(gameGrid.CanPlacePlant(worldPosition) && JudgeSunNum(isSelectCard.plant.data.cost))
             {
                 ABResMgr.Instance.LoadResAsync<GameObject>("plant", isSelectCard.plant.data.plantName, (res) =>
                 {
@@ -124,6 +137,7 @@ public class PlantCardsPanel : BasePanel
                     print(isSelectCard.isSelected);
                     //设置植物种植CD
                     isSelectCard.StartCoolDown();
+                    LevelMgr.Instance.ChangeSunNum(-isSelectCard.plant.data.cost);
                     isSelectCard = null;
 
                     
@@ -195,6 +209,17 @@ public class PlantCardsPanel : BasePanel
         shovel.anchoredPosition = originalShovelPosition;
         //shovel.gameObject.SetActive(false);
     }
+
+
+
+    bool JudgeSunNum(int plantcost)
+    {
+        if( LevelMgr.Instance.nowSunNum - plantcost >= 0)
+            return true;
+        return false;
+    }
+
+
 
     #endregion
 

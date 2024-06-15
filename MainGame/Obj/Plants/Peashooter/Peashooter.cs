@@ -15,9 +15,12 @@ public class Peashooter : Plant
         SetATKRange();
         canAtk = true; // 豌豆射手可以攻击
         TimerMgr.Instance.StartTimer(attackTimer); // 开始攻击计时器
+        ChangeAnimation("Peashooter_Idle");
     }
 
-    //设置攻击范围
+    /// <summary>
+    /// 设置攻击范围
+    /// </summary>
     void SetATKRange()
     {
         Vector2 pos = gridCell.pos;
@@ -40,6 +43,10 @@ public class Peashooter : Plant
         }
     }
 
+    /// <summary>
+    /// 检测前方是否有僵尸
+    /// </summary>
+    /// <returns></returns>
     private bool DetectEnemy()
     {
         // 定义长方体的中心和半尺寸
@@ -50,6 +57,8 @@ public class Peashooter : Plant
         Collider[] enemies = Physics.OverlapBox(center, halfExtents, transform.rotation, data.enemyLayer);
         return enemies.Length > 0;
     }
+
+
 
     private void OnDrawGizmosSelected()
     {

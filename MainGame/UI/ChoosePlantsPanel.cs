@@ -32,10 +32,17 @@ public class ChoosePlantsPanel : BasePanel
 
     void ShowPlantCards()
     {
-        for (int i = 0; i < plantCards.Count; i++)
+        GameObject peashooter = Instantiate(plantCards[0].gameObject, SV_Content);
+        ABResMgr.Instance.LoadResAsync<GameObject>("plant", "Peashooter", (res) =>
         {
-            GameObject card = Instantiate(plantCards[i].gameObject,SV_Content);
-        }
+            peashooter.GetComponent<PlantCard>().plant = res.GetComponent<Plant>();
+        });
+        
+        GameObject sunflower = Instantiate(plantCards[1].gameObject, SV_Content);
+        ABResMgr.Instance.LoadResAsync<GameObject>("plant", "Sunflower", (res) =>
+        {
+            sunflower.GetComponent<PlantCard>().plant = res.GetComponent<Plant>();
+        });
     }
 
 

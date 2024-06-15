@@ -34,6 +34,8 @@ public class EditorResMgr : BaseManager<EditorResMgr>
             suffixName = ".json";
         else if (typeof(T) == typeof(SceneAsset))
             suffixName = ".unity";
+        else if (typeof(T) == typeof(LevelData))
+            suffixName = ".asset";
         T res = AssetDatabase.LoadAssetAtPath<T>(rootPath + path + suffixName);
         return res;
 #else

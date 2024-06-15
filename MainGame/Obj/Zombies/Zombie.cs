@@ -15,19 +15,35 @@ public abstract class Zombie : MonoBehaviour
     public bool canMove = false;            //是否可以攻击
     public float detectionInterval = 0.5f;  // 检测间隔时间
 
+    public bool isDead = false;
 
 
     public Vector3 attackCenter = Vector3.zero;
     public Vector3 attackRange = Vector3.one;
 
+    private Animator animator;
+    [SerializeField]private string currentAnimation = "";
+
+
+    protected virtual void ChangeAnimation(string animation,float crossfade = 0.2f)
+    {
+        if(currentAnimation != animation)
+        {
+            currentAnimation = animation;
+            animator.CrossFade(animation,crossfade);
+        }
+    }
+
+
     protected virtual void Start()
     {
-
+        animator = GetComponentInChildren<Animator>();
 
         currentHealth = data.maxHealth;
 
         // 启动协程来执行检测
         StartCoroutine(DetectObstacle());
+
     }
 
 
@@ -52,7 +68,7 @@ public abstract class Zombie : MonoBehaviour
     /// <returns></returns>
     protected virtual IEnumerator DetectObstacle()
     {
-        while (true)
+        while (true&&!isDead)
         {
 
             // 创建一个位于僵尸前方的小触发器
@@ -69,6 +85,7 @@ public abstract class Zombie : MonoBehaviour
             else
             {
                 canMove = true;
+                Attack(null);
             }
             //每隔detectionInterval时间检测一次前方是否可以行走
             yield return new WaitForSeconds(detectionInterval);
@@ -101,15 +118,21 @@ public abstract class Zombie : MonoBehaviour
     /// </summary>
     protected virtual void Die()
     {
-        Destroy(gameObject); // 销毁植物对象
+        isDead = true;
+        //Destroy(gameObject); 
     }
-
 
 
     private void OnDrawGizmosSelected()
     {
-        // 绘制攻击范围的长方体区域
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position + attackCenter, attackRange);
+        // 设置Gizmos颜色
+        Gizmos.color = Color.green;
+
+        // 计算盒子中心在世界坐标中的位置
+        Vector3 worldCenter = transform.position + attackCenter;
+
+        // 绘制盒子
+        Gizmos.matrix = Matrix4x4.TRS(worldCenter, Quaternion.identity, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, attackRange * 2); // attackRange * 2 是为了得到整个盒子的尺寸
     }
 }

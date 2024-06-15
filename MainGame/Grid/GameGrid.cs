@@ -94,12 +94,13 @@ public class GameGrid : MonoBehaviour
                 spowner.transform.SetParent(transform.parent, false);
                 ZombieSpawner spawner = spowner.GetComponent<ZombieSpawner>();
 
-                spawner.StartSpawningZombies(3);
+                //spawner.StartSpawningZombies(3);
 
                 spwns.Add(spawner);
 
             });
         }
+        LevelMgr.Instance.spwns = spwns;
         
     } 
 
